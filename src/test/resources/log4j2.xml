@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xmlns:xi="http://www.w3.org/2001/XInclude" status="warn" monitorInterval="30">
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%-5level %t - %message%n"/>
+        </Console>
+        <Console name="NoThread" target="SYSTEM_OUT">
+            <PatternLayout pattern="%-5level %message%n"/>
+        </Console>
+        <Routing name="logRouter">
+            <!-- Route to appender with the matching marker -->
+            <Routes pattern="$${marker:}">
+                <Route key="NO_THREAD" ref="NoThread" />
+                <Route key="$${marker:}" ref="Console" />
+            </Routes>
+        </Routing>
+    </appenders>
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="logRouter"/>
+        </Root>
+    </Loggers>
+</configuration>
