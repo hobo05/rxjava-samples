@@ -2,9 +2,9 @@ package com.chengsoft;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -15,66 +15,21 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.chengsoft.MarkerConstants.*;
+import static com.chengsoft.MarkerConstants.NO_THREAD;
 
 /**
  * @author tcheng
  */
 @SuppressWarnings("Duplicates")
 @Slf4j
+@Ignore
 public class FutureAndCompletableFutureTest {
 
     private static final int SLOW = 5000;
     private static final int NORMAL = 2000;
     private static final int FAST = 500;
 
-    /**
-     * @author tcheng
-     */
-    @Data
-    @NoArgsConstructor
-    @ToString(exclude = "latch")
-    public static class Foo {
-        @Getter(AccessLevel.NONE)
-        @Setter(AccessLevel.NONE)
-        private CountDownLatch latch = new CountDownLatch(3);
-        private String partOne;
-        private String partTwo;
-        private String partThree;
 
-        public Foo(String partOne, String partTwo, String partThree) {
-            this.partOne = partOne;
-            this.partTwo = partTwo;
-            this.partThree = partThree;
-        }
-
-        public void setPartOne(String partOne) {
-            log.info("Setting Part 1");
-            this.partOne = partOne;
-            latch.countDown();
-        }
-
-        public void setPartTwo(String partTwo) {
-            log.info("Setting Part 2");
-            this.partTwo = partTwo;
-            latch.countDown();
-        }
-
-        public void setPartThree(String partThree) {
-            log.info("Setting Part 3");
-            this.partThree = partThree;
-            latch.countDown();
-        }
-
-        public void waitForParts() {
-            try {
-                log.info("Block until all parts have been set");
-                latch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
 
     @Before
     public void before() {
@@ -412,6 +367,7 @@ public class FutureAndCompletableFutureTest {
             return "c";
         }).subscribeOn(Schedulers.newThread());
 
+
         // subscribe() does NOT run on the main thread so we have to artificially block
         Observable<Foo> fooObservable = Observable.zip(partOne, partTwo, partThree,
                 (partOneResult, partTwoResult, partThreeResult) -> {
@@ -477,9 +433,7 @@ public class FutureAndCompletableFutureTest {
                 throw new RuntimeException("test");
             }
             return "c";
-        })
-                .retry(5)
-                .doOnError(t -> log.error("Failed on Part 3 count {}", failureCount.getAndIncrement()));
+        }).doOnError(t -> log.error("Failed on Part 3 count {}", failureCount.getAndIncrement()));
 
         // Zip together results into a foo observable
         log.info("Create Zip");
