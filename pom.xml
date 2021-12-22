@@ -18,7 +18,7 @@
     <apache.commons.version>3.4</apache.commons.version>
     <slf4j.version>1.7.12</slf4j.version>
     <slf4j-log4j.version>2.4</slf4j-log4j.version>
-    <log4j.version>2.16.0</log4j.version>
+    <log4j.version>2.17.0</log4j.version>
     <jetbrains.annotations>15.0</jetbrains.annotations>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
